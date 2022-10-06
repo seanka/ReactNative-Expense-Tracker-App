@@ -1,5 +1,5 @@
 import { useLayoutEffect } from "react";
-import { Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import Button from "../components/UI/Button.";
 import IconButton from "../components/UI/IconButton";
@@ -15,11 +15,17 @@ function ManageExpense({ route, navigation }) {
     });
   }, [navigation, isEditing]);
 
-  function deleteExpenseHandler() {}
+  function deleteExpenseHandler() {
+    navigation.goBack();
+  }
 
-  function cancelHandler() {}
+  function cancelHandler() {
+    navigation.goBack();
+  }
 
-  function confirmHandler() {}
+  function confirmHandler() {
+    navigation.goBack();
+  }
 
   return (
     <View style={styles.container}>
