@@ -4,7 +4,10 @@ const BACKEND_URL =
   "https://react-native-course-bbfc9-default-rtdb.asia-southeast1.firebasedatabase.app";
 
 export async function storeExpense(expenseData) {
-  const response = axios.post(BACKEND_URL + "/expenses.json", expenseData);
+  const response = await axios.post(
+    BACKEND_URL + "/expenses.json",
+    expenseData
+  );
   const id = response.data.name;
   return id;
 }
