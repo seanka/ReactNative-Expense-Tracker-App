@@ -5,15 +5,15 @@ import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 import IconButton from "../components/UI/IconButton";
 import { GlobalStyles } from "../constants/style";
 import { ExpensesContext } from "../store/expenses-context";
-import { storeExpense } from "../util/http";
+import { storeExpense, updateExpense, deleteExpense } from "../util/http";
 
 function ManageExpense({ route, navigation }) {
-  const expenseCtx = useContext(ExpensesContext);
+  const expensesCtx = useContext(ExpensesContext);
 
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
 
-  const selectedExpense = expenseCtx.expenses.find(
+  const selectedExpense = expensesCtx.expenses.find(
     (expense) => expense.id === editedExpenseId
   );
 
@@ -23,8 +23,9 @@ function ManageExpense({ route, navigation }) {
     });
   }, [navigation, isEditing]);
 
-  function deleteExpenseHandler() {
-    expenseCtx.deleteExpense(editedExpenseId);
+  async function deleteExpenseHandler() {
+    await deleteExpense(editedExpenseId);
+    expensesCtx.deleteExpense(editedExpenseId);
     navigation.goBack();
   }
 
@@ -34,10 +35,11 @@ function ManageExpense({ route, navigation }) {
 
   async function confirmHandler(expenseData) {
     if (isEditing) {
-      expenseCtx.updateExpense(editedExpenseId, expenseData);
+      expensesCtx.updateExpense(editedExpenseId, expenseData);
+      await updateExpense(editedExpenseId, expenseData);
     } else {
       const id = await storeExpense(expenseData);
-      expenseCtx.addExpense({ ...expenseData, id: id });
+      expensesCtx.addExpense({ ...expenseData, id: id });
     }
     navigation.goBack();
   }
@@ -45,9 +47,9 @@ function ManageExpense({ route, navigation }) {
   return (
     <View style={styles.container}>
       <ExpenseForm
-        onCancel={cancelHandler}
-        onSubmit={confirmHandler}
         submitButtonLabel={isEditing ? "Update" : "Add"}
+        onSubmit={confirmHandler}
+        onCancel={cancelHandler}
         defaultValues={selectedExpense}
       />
       {isEditing && (
@@ -72,7 +74,6 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: GlobalStyles.colors.primary800,
   },
-
   deleteContainer: {
     marginTop: 16,
     paddingTop: 8,
